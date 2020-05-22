@@ -1,4 +1,4 @@
-# In order to run this, kindly first download the file tess.txt from the repository and save it in the same location (folder) as you saved Platypus. For e.g. in C:\Users\'your account name'
+# In order to run this, kindly first download the file tess.py from the repository and save it in the same location (folder) as you saved Platypus. For e.g. in C:\Users\'your account name'
   
 from platypus import *
 import matplotlib.pyplot as plt

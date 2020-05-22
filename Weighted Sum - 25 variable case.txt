@@ -1,0 +1,35 @@
+import autograd.numpy as anp
+import numpy as np
+from pymoo.util.misc import stack
+from pymoo.model.problem import Problem
+from pymoo.algorithms.so_genetic_algorithm import GA
+from pymoo.factory import get_sampling, get_crossover, get_mutation
+from pymoo.optimize import minimize
+
+import time
+start_time = time.time()
+for w1 in np.arange(0, 1, 0.05):
+ for w2 in np.arange(0, 1, 0.05):
+  w3 = 1 - w2 - w1
+  if (w1 + w2 + w3 == 1 and w3 >= 0):
+   class MyProblem(Problem):
+    def __init__(self):
+     super().__init__(n_var=25,  n_obj=1, n_constr=2, xl=anp.array([0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0, 0,0,0,0]),  xu=anp.array([1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1]))
+    def _evaluate(self, x, out, *args, **kwargs):  
+     f1 = w1*(31*x[:,0] + 38*x[:,1] + 19*x[:,2] + 28*x[:,3] + 45*x[:,4] + 23*x[:,5] + 23*x[:,6] + 28*x[:,7] + 37*x[:,8] + 42*x[:,9] + 20*x[:,10] + 25*x[:,11] + 39*x[:,12] + 33*x[:,13] + 37*x[:,14] + 25*x[:,15] + 28*x[:,16] + 23*x[:,17] + 38*x[:,18] + 30*x[:,19] + 21*x[:,20] + 40*x[:,21] + 34*x[:,22] + 41*x[:,23] + 31*x[:,24]) + w2*(27*x[:,0] + 35*x[:,1] + 62*x[:,2] + 48*x[:,3] + 22*x[:,4] + 27*x[:,5] + 33*x[:,6] + 27*x[:,7] + 48*x[:,8] + 35*x[:,9] + 48*x[:,10] + 33*x[:,11] + 33*x[:,12] + 48*x[:,13] + 27*x[:,14] + 62*x[:,15] + 35*x[:,16] + 48*x[:,17] + 22*x[:,18] + 33*x[:,19] + 62*x[:,20] + 22*x[:,21]  + 48*x[:,22] + 27*x[:,23] + 33*x[:,24]) + w3*(55*x[:,0] + 56*x[:,1] + 59*x[:,2] + 55*x[:,3] + 65*x[:,4] + 73*x[:,5] + 62*x[:,6] + 60*x[:,7] + 54*x[:,8] + 58*x[:,9] + 63*x[:,10] + 59*x[:,11] + 61*x[:,12] + 59*x[:,13] + 57*x[:,14] + 53*x[:,15] + 59*x[:,16] + 60*x[:,17] + 72*x[:,18] + 54*x[:,19] + 57*x[:,20] + 66*x[:,21] + 59*x[:,22] + 51*x[:,23] + 56*x[:,24])
+     g1 = x[:,0] + x[:,1] + x[:,2] + x[:,3] + x[:,4] + x[:,5] + x[:,6] + x[:,7] + x[:,8] + x[:,9] + x[:,10] + x[:,11] + x[:,12] + x[:,13] + x[:,14] + x[:,15] + x[:,16] + x[:,17] + x[:,18] + x[:,19] + x[:,20] + x[:,21] + x[:,22] + x[:,23] + x[:,24] - 1
+     g2 = 1 – x[:,0] –  x[:,1] –  x[:,2] –  x[:,3] –  x[:,4] –  x[:,5] –  x[:,6] –  x[:,7] –  x[:,8] –  x[:,9] –  x[:,10] –  x[:,11] –  x[:,12] –  x[:,13] –  x[:,14] –  x[:,15] –  x[:,16] –  x[:,17] –  x[:,18] –  x[:,19] –  x[:,20] –  x[:,21] –  x[:,22] –  x[:,23] –  x[:,24]
+     out["F"] = anp.column_stack([f1])
+     out["G"] = anp.column_stack([g1, g2])
+   problem = MyProblem()
+   algorithm = GA(pop_size=50, sampling=get_sampling("bin_random"), crossover=get_crossover("bin_hux"), mutation=get_mutation("bin_bitflip"),  eliminate_duplicates=True)
+   res = minimize(problem, algorithm, ('n_gen', 10), verbose=False)
+   print(“w1 is: ”, w1)
+   print(“w2 is: ”, w2)
+   print(“w3 is: ”, w3)
+   print("Best solution found: %s" % res.X.astype(np.int))
+   print("Function value: %s" % res.F)
+   print("Constraint violation: %s" % res.CV)
+
+if __name__ == "__main__":
+ print("--- %s seconds ---" % (time.time() - start_time))
